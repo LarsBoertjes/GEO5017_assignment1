@@ -47,10 +47,19 @@ differences = predicted_positions - positions
 # -- square and sum them to find the residual error
 residual_error = np.sum(differences ** 2)
 
-print(residual_error)
+print("Residual error:", np.round(residual_error, 2))
 
 # 2.3 Drone acceleration
+# -- With constant acceleration, speed is linear, position is polynomial. Thus fit for use with Polynomial Regression
+# -- I think for now it is ok to chose k = 2, so y = a0 + a1*x + a2*x**2
+# -- a0 initial position
+# -- a1 initial velocity
+# -- a2 the acceleration
 
+# -- next determine coefficients a0, a1, a2 using polynomial regression
 
+# -- calculate residual error
+
+# -- compare with error from 2.2
 
 # 2.4 Predict next position
