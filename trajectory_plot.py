@@ -58,7 +58,9 @@ print("Residual error:", np.round(residual_error, 2))
 
 # -- next determine coefficients a0, a1, a2 using polynomial regression
 
-# -- calculate residual error
+# -- fit a polynomial for each axis (x, y, z)
+
+# -- calculate residual error by summing residual error for each axis
 
 # -- compare with error from 2.2
 
