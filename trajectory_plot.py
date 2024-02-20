@@ -29,24 +29,51 @@ k = 2
 
 D = np.column_stack((np.ones(len(t)), t, t**k))
 
-alpha = np.linalg.inv(D.T @ D) @ D.T @ x
-x_predicted = [alpha[0] + alpha[1] * t + alpha[2] * t ** 2 for t in t]
+coef_x = np.linalg.inv(D.T @ D) @ D.T @ x
+x_predicted = [coef_x[0] + coef_x[1] * t + coef_x[2] * t ** 2 for t in t]
 x_residuals = sum((x - x_predicted)**2)
 
+coef_y = np.linalg.inv(D.T @ D) @ D.T @ y
+y_predicted = [coef_y[0] + coef_y[1] * t + coef_y[2] * t ** 2 for t in t]
+y_residuals = sum((y - y_predicted)**2)
+
+coef_z = np.linalg.inv(D.T @ D) @ D.T @ z
+z_predicted = [coef_z[0] + coef_z[1] * t + coef_z[2] * t ** 2 for t in t]
+z_residuals = sum((z - z_predicted)**2)
+
+fig, axs = plt.subplots(3, 1, figsize=(10, 15))
+
 # plot actual vs predicted
-plt.figure()
-plt.scatter(t, x, label='True X values')
-plt.plot(t, x_predicted, label='Predicted X values', linestyle='--')
-plt.xlabel('Time')
-plt.ylabel('X Position')
-plt.title('True vs Predicted X Positions')
-plt.legend()
+axs[0].scatter(t, x, label='True X values', color='blue', marker='o')
+axs[0].plot(t, x_predicted, label='Predicted X values', linestyle='--', color='red')
+axs[0].set_xlabel('Time')
+axs[0].set_ylabel('X Position')
+axs[0].set_title('True vs Predicted X Positions')
+axs[0].legend()
+
+# Plot for y
+axs[1].scatter(t, y, label='True Y values', color='green', marker='o')
+axs[1].plot(t, y_predicted, label='Predicted Y values', linestyle='--', color='orange')
+axs[1].set_xlabel('Time')
+axs[1].set_ylabel('Y Position')
+axs[1].set_title('True vs Predicted Y Positions')
+axs[1].legend()
+
+# Plot for z
+axs[2].scatter(t, z, label='True Z values', color='purple', marker='o')
+axs[2].plot(t, z_predicted, label='Predicted Z values', linestyle='--', color='brown')
+axs[2].set_xlabel('Time')
+axs[2].set_ylabel('Z Position')
+axs[2].set_title('True vs Predicted Z Positions')
+axs[2].legend()
+
+plt.tight_layout()
 plt.show()
 
 # Print the arrays to the console
-print("True X values:", x)
-print("Predicted X values:", x_predicted)
 print("Residual value for X is: ", x_residuals)
+print("Residual value for Y is: ", y_residuals)
+print("Residual value for Z is: ", z_residuals)
 
 
 # 2.4 Predict next position
