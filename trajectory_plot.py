@@ -20,48 +20,33 @@ ax.set_title('Trajectory Plot')
 plt.show()
 
 # 2.2 Drone speed
-positions = np.column_stack((x, y, z))
-time_intervals = np.arange(1, 7)
+t = np.arange(1, len(x) + 1)
+x = np.array(x)
+y = np.array(y)
+z = np.array(z)
 
-final_position = positions[-1]
-initial_position = positions[0]
+k = 2
 
-# -- velocity vector for each axis
-velocity_x = (final_position[0] - initial_position[0]) / (time_intervals[-1] - time_intervals[0])
-velocity_y = (final_position[1] - initial_position[1]) / (time_intervals[-1] - time_intervals[0])
-velocity_z = (final_position[2] - initial_position[2]) / (time_intervals[-1] - time_intervals[0])
+D = np.column_stack((np.ones(len(t)), t, t**k))
 
-# -- take the norm of the combined velocities
-velocity_vector = np.array([velocity_x, velocity_y, velocity_z])
+alpha = np.linalg.inv(D.T @ D) @ D.T @ x
+x_predicted = [alpha[0] + alpha[1] * t + alpha[2] * t ** 2 for t in t]
+x_residuals = sum((x - x_predicted)**2)
 
-speed = np.linalg.norm(velocity_vector)
+# plot actual vs predicted
+plt.figure()
+plt.scatter(t, x, label='True X values')
+plt.plot(t, x_predicted, label='Predicted X values', linestyle='--')
+plt.xlabel('Time')
+plt.ylabel('X Position')
+plt.title('True vs Predicted X Positions')
+plt.legend()
+plt.show()
 
-print("Speed of drone is:", np.round(speed, 2), "units per second")
+# Print the arrays to the console
+print("True X values:", x)
+print("Predicted X values:", x_predicted)
+print("Residual value for X is: ", x_residuals)
 
-# -- to calculate residuals make a prediction for the position based on calculated velocity
-predicted_positions = np.array([initial_position + velocity_vector * t for t in time_intervals])
-
-# -- find differences between predicted and actual positions
-differences = predicted_positions - positions
-
-# -- square and sum them to find the residual error
-residual_error = np.sum(differences ** 2)
-
-print("Residual error:", np.round(residual_error, 2))
-
-# 2.3 Drone acceleration
-# -- With constant acceleration, speed is linear, position is polynomial. Thus fit for use with Polynomial Regression
-# -- I think for now it is ok to chose k = 2, so y = a0 + a1*x + a2*x**2
-# -- a0 initial position
-# -- a1 initial velocity
-# -- a2 the acceleration
-
-# -- next determine coefficients a0, a1, a2 using polynomial regression
-
-# -- fit a polynomial for each axis (x, y, z)
-
-# -- calculate residual error by summing residual error for each axis
-
-# -- compare with error from 2.2
 
 # 2.4 Predict next position
