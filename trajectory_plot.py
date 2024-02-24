@@ -34,7 +34,7 @@ def least_squares(input_values, output_values):
     predicted_values = [coeffs[0] + coeffs[1] * value + coeffs[2] * value ** 2 for value in input_values]
     residuals = sum((output_values - predicted_values)**2)
 
-    return (coeffs, predicted_values, residuals)
+    return (residuals, coeffs, predicted_values)
 
 
 x_predicted = least_squares(t, x)
@@ -48,7 +48,7 @@ fig, axs = plt.subplots(3, 1, figsize=(10, 15))
 
 # plot actual vs predicted
 axs[0].scatter(t, x, label='True X values', color='blue', marker='o')
-axs[0].plot(t, x_predicted[1], label='Predicted X values', linestyle='--', color='red')
+axs[0].plot(t, x_predicted[2], label='Predicted X values', linestyle='--', color='red')
 axs[0].set_xlabel('Time')
 axs[0].set_ylabel('X Position')
 axs[0].set_title('True vs Predicted X Positions')
@@ -56,7 +56,7 @@ axs[0].legend()
 
 # Plot for y
 axs[1].scatter(t, y, label='True Y values', color='green', marker='o')
-axs[1].plot(t, y_predicted[1], label='Predicted Y values', linestyle='--', color='orange')
+axs[1].plot(t, y_predicted[2], label='Predicted Y values', linestyle='--', color='orange')
 axs[1].set_xlabel('Time')
 axs[1].set_ylabel('Y Position')
 axs[1].set_title('True vs Predicted Y Positions')
@@ -64,7 +64,7 @@ axs[1].legend()
 
 # Plot for z
 axs[2].scatter(t, z, label='True Z values', color='purple', marker='o')
-axs[2].plot(t, z_predicted[1], label='Predicted Z values', linestyle='--', color='brown')
+axs[2].plot(t, z_predicted[2], label='Predicted Z values', linestyle='--', color='brown')
 axs[2].set_xlabel('Time')
 axs[2].set_ylabel('Z Position')
 axs[2].set_title('True vs Predicted Z Positions')
