@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 # will get warning if you don't have pyarrow on your system / venv
+from PolynomialGradientSolver import gradient_descent
 
 df = pd.read_csv('data/positions.csv')
 
@@ -10,7 +11,7 @@ y_pos = np.array(df['Y'])
 z_pos = np.array(df['Z'])
 t = np.arange(1, len(x_pos) + 1)
 
-fig, axs = plt.subplots(3, 3, figsize=(20, 15))
+fig, axs = plt.subplots(5, 3, figsize=(20, 25))
 
 # make sure al x-axis are the same
 for ax_row in axs:
@@ -56,27 +57,92 @@ axs[1, 2].plot(t_first_derivative, z_velocity, color='lightgreen', linestyle='--
 axs[1, 2].set_xlabel('time')
 axs[1, 2].set_ylabel('z_velocity')
 
+# fit polynomial regression line through velocity plot
+
+# gradient descent x velocity
+GDxv = gradient_descent(10000, t_first_derivative, x_velocity, 0.001)
+
+axs[2, 0].scatter(t_first_derivative, x_velocity, label='Velocity of X', color='blue', marker='o')
+axs[2, 0].plot(t_first_derivative, x_velocity, color='lightblue', linestyle='--')
+axs[2, 0].plot(t_first_derivative, GDxv[2],color='black', label='gradient prediction')
+axs[2, 0].set_xlabel(f"Equation of polynomial: {np.round(GDxv[1][0], 2)} t**2 + {np.round(GDxv[1][1], 2)}t + {np.round(GDxv[1][2], 2)}, sum of residuals: {np.round(GDxv[0], 2)}")
+axs[2, 0].set_ylabel('x_velocity')
+
+# gradient descent x velocity
+GDyv = gradient_descent(10000, t_first_derivative, y_velocity, 0.001)
+
+axs[2, 1].scatter(t_first_derivative, y_velocity, label='Velocity of Y', color='red', marker='o')
+axs[2, 1].plot(t_first_derivative, y_velocity, color='salmon', linestyle='--')
+axs[2, 1].plot(t_first_derivative, GDyv[2], color='black', label='gradient prediction')
+axs[2, 1].set_xlabel(f"Equation of polynomial: {np.round(GDyv[1][0], 2)} t**2 + {np.round(GDyv[1][1], 2)}t + {np.round(GDyv[1][2], 2)}, sum of residuals: {np.round(GDyv[0], 2)}")
+axs[2, 1].set_ylabel('y_velocity')
+
+# gradient descent z velocity
+GDzv = gradient_descent(10000, t_first_derivative, z_velocity, 0.001)
+
+axs[2, 2].scatter(t_first_derivative, z_velocity, label='Velocity of Z', color='green', marker='o')
+axs[2, 2].plot(t_first_derivative, z_velocity, color='lightgreen', linestyle='--')
+axs[2, 2].plot(t_first_derivative, GDzv[2], color='black', label='gradient prediction')
+axs[2, 2].set_xlabel(f"Equation of polynomial: {np.round(GDzv[1][0], 2)} t**2 + {np.round(GDzv[1][1], 2)}t + {np.round(GDzv[1][2], 2)}, sum of residuals: {np.round(GDzv[0], 2)}")
+axs[2, 2].set_ylabel('z_velocity')
+
 # making the acceleration plots
 x_acceleration = np.diff(x_velocity) / np.diff(t_first_derivative)
 y_acceleration = np.diff(y_velocity) / np.diff(t_first_derivative)
 z_acceleration = np.diff(z_velocity) / np.diff(t_first_derivative)
 t_second_derivative = t_first_derivative[:-1] + 0.5
 
-axs[2, 0].scatter(t_second_derivative, x_acceleration, label='Acceleration of X', color='blue', marker='o')
-axs[2, 0].plot(t_second_derivative, x_acceleration, color='lightblue', linestyle='--')
-axs[2, 0].set_xlabel('time')
-axs[2, 0].set_ylabel('x_acceleration')
+axs[3, 0].scatter(t_second_derivative, x_acceleration, label='Acceleration of X', color='blue', marker='o')
+axs[3, 0].plot(t_second_derivative, x_acceleration, color='lightblue', linestyle='--')
+axs[3, 0].set_xlabel('time')
+axs[3, 0].set_ylabel('x_acceleration')
 
-axs[2, 1].scatter(t_second_derivative, y_acceleration, label='Acceleration of Y', color='red', marker='o')
-axs[2, 1].plot(t_second_derivative, y_acceleration, color='salmon', linestyle='--')
-axs[2, 1].set_xlabel('time')
-axs[2, 1].set_ylabel('y_acceleration')
+axs[3, 1].scatter(t_second_derivative, y_acceleration, label='Acceleration of Y', color='red', marker='o')
+axs[3, 1].plot(t_second_derivative, y_acceleration, color='salmon', linestyle='--')
+axs[3, 1].set_xlabel('time')
+axs[3, 1].set_ylabel('y_acceleration')
 
-axs[2, 2].scatter(t_second_derivative, z_acceleration, label='Acceleration of Z', color='green', marker='o')
-axs[2, 2].plot(t_second_derivative, z_acceleration, color='lightgreen', linestyle='--')
-axs[2, 2].set_xlabel('time')
-axs[2, 2].set_ylabel('z_acceleration')
-axs[2, 2].axhline(y=0, color='grey', linestyle='-', linewidth=0.5)
+axs[3, 2].scatter(t_second_derivative, z_acceleration, label='Acceleration of Z', color='green', marker='o')
+axs[3, 2].plot(t_second_derivative, z_acceleration, color='lightgreen', linestyle='--')
+axs[3, 2].set_xlabel('time')
+axs[3, 2].set_ylabel('z_acceleration')
+
+# fit polynomial regression line through acceleration plot
+
+# gradient descent x acceleration
+GDxa = gradient_descent(10000, t_second_derivative, x_acceleration, 0.001)
+
+axs[4, 0].scatter(t_second_derivative, x_acceleration, label='Acceleration of X', color='blue', marker='o')
+axs[4, 0].plot(t_second_derivative, x_acceleration, color='lightblue', linestyle='--')
+axs[4, 0].plot(t_second_derivative, GDxa[2], color='black', label='gradient prediction')
+axs[4, 0].set_xlabel(f"Equation of polynomial: {np.round(GDxa[1][0], 2)} t**2 + {np.round(GDxa[1][1], 2)}t + {np.round(GDxa[1][2], 2)}, sum of residuals: {np.round(GDxa[0], 2)}")
+axs[4, 0].set_ylabel('x_acceleration')
+
+# gradient descent y acceleration
+GDya = gradient_descent(10000, t_second_derivative, y_acceleration, 0.001)
+
+axs[4, 1].scatter(t_second_derivative, y_acceleration, label='Acceleration of Y', color='red', marker='o')
+axs[4, 1].plot(t_second_derivative, y_acceleration, color='salmon', linestyle='--')
+axs[4, 1].plot(t_second_derivative, GDya[2], color='black', label='gradient prediction')
+axs[4, 1].set_xlabel(f"Equation of polynomial: {np.round(GDya[1][0], 2)} t**2 + {np.round(GDya[1][1], 2)}t + {np.round(GDya[1][2], 2)}, sum of residuals: {np.round(GDya[0])}")
+axs[4, 1].set_ylabel('y_acceleration')
+
+# gradient descent x acceleration
+GDza = gradient_descent(10000, t_second_derivative, z_acceleration, 0.001)
+
+axs[4, 2].scatter(t_second_derivative, z_acceleration, label='Acceleration of Z', color='green', marker='o')
+axs[4, 2].plot(t_second_derivative, x_acceleration, color='lightgreen', linestyle='--')
+axs[4, 2].plot(t_second_derivative, GDza[2], color='black', label='gradient prediction')
+axs[4, 2].set_xlabel(f"Equation of polynomial: {np.round(GDza[1][0], 2)} t**2 + {np.round(GDza[1][1], 2)}t + {np.round(GDza[1][2], 2)}, sum of residuals: {np.round(GDza[0], 2)}")
+axs[4, 2].set_ylabel('z_acceleration')
+
+
+
+
+
+
+
+
 
 plt.tight_layout()
 plt.show()

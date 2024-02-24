@@ -69,7 +69,7 @@ def gradient_descent(iterations, input_vals, output_vals, learning_rate):
         rand_coeffs_to_test = loss[1]
         losses.append(loss[0])
 
-    print(losses)
+    #print(losses)
 
     return loss[0], loss[1], loss[2], losses
 
