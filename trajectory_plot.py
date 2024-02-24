@@ -77,3 +77,26 @@ print("Residual value for Z is: ", z_residuals)
 
 
 # 2.4 Predict next position
+
+# speed test
+matrix = df.to_numpy()
+print(matrix)
+time = range(len(matrix))
+print(time)
+
+speed_array = np.zeros(matrix.shape)
+for i in time:
+    if i - 1 >= 0:
+        speed_array[i] = matrix[i] - matrix[i - 1]
+
+print(speed_array)
+speed = np.linalg.norm(speed_array, axis=1)
+print(speed)
+
+plt.plot(time, speed)
+plt.xlabel('Time')
+plt.ylabel('Speed')
+plt.title('Speed over Time')
+plt.show()
+
+
