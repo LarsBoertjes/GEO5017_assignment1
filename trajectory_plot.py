@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-# will get warning if you don't have pyarrow on your system / venv
 
 df = pd.read_csv('data/positions.csv')
 

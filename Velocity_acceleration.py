@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-# will get warning if you don't have pyarrow on your system / venv
+
 from PolynomialGradientSolver import gradient_descent
 from trajectory_plot import least_squares
 
