@@ -93,7 +93,7 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
 
 learning_rate = 0.0001
-iterations = 100000
+iterations = 200000
 def gradient_solver(y, t, learning_rate, iterations):
     a0 = 0
     a1 = 0
@@ -122,13 +122,40 @@ bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations)
 by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations)
 bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations)
 
-error_x_acc = loss_olse(y, predict_acc(bx_0, bx_1, bx_2, t))
+error_x_acc = loss_olse(x, predict_acc(bx_0, bx_1, bx_2, t))
 error_y_acc = loss_olse(y, predict_acc(by_0, by_1, by_2, t))
-error_z_acc = loss_olse(y, predict_acc(bz_0, bz_1, bz_2, t))
+error_z_acc = loss_olse(z, predict_acc(bz_0, bz_1, bz_2, t))
 
-print(bx_0, bx_1, bx_2, by_0, by_1, by_2)
-# making the position plots
+print('gradient descent polynomial')
+print('ax_0 = ', bx_0, 'ax_1 = ', bx_1, 'ax_2 = ', bx_2,
+      'ay_0 = ', by_0, 'ay_1 = ', by_1, 'ay_2 = ', by_2,
+      'az_0 = ', bz_0, 'az_1 = ', bz_1, 'az_2 = ', bz_2, )
+print('acceleration in x-direction = ',bx_2, '\nacceleration in y-direction =',by_2, '\nacceleration in z-direction = ', bz_2,)
+print('errors x y z: ', error_x_acc, error_y_acc, error_z_acc)
+print('next position on t = 6 will be (x,y,z): \n',
+    predict_acc(bx_0, bx_1, bx_2, 6), predict_acc(by_0, by_1, by_2, 6), predict_acc(bz_0, bz_1, bz_2, 6))
 
+
+# 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
+# polynomial regression method
+# objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
+
+def polynomial_regression(t, y):
+    D = np.vstack((t**0, t**1, t**2)).T
+    y_up = y.T
+    coefficients = np.linalg.inv(D.T @ D) @ D.T @ y_up
+    return coefficients[0], coefficients[1], coefficients[2]
+
+bx_0_poly, bx_1_poly, bx_2_poly = polynomial_regression(t, x)
+by_0_poly, by_1_poly, by_2_poly = polynomial_regression(t, y)
+bz_0_poly, bz_1_poly, bz_2_poly = polynomial_regression(t, z)
+
+error_x_acc2 = loss_olse(x, predict_acc(bx_0_poly, bx_1_poly, bx_2_poly, t))
+error_y_acc2 = loss_olse(y, predict_acc(by_0_poly, by_1_poly, by_2_poly, t))
+error_z_acc2 = loss_olse(z, predict_acc(bz_0_poly, bz_1_poly, bz_2_poly, t))
+
+print('polynomial regression')
+print('errors x y z: ', error_x_acc2, error_y_acc2, error_z_acc2)
 
 fig, axs = plt.subplots(1, 3, figsize=(20, 5))
 fig.suptitle('Position of X, Y, and Z')
@@ -164,13 +191,15 @@ fig, axs2 = plt.subplots(1, 3, figsize=(20, 5))
 fig.suptitle('Position of X, Y, and Z')
 
 for ax in axs2:
-    ax.set_xlim(-0.1, 6.1)
+    ax.set_xlim(-0.1, 6)
     ax.axhline(y=0, color='grey', linestyle='-', linewidth=0.5)
 
 # Plotting x
 axs2[0].scatter(t, x, label='Position of X', color='blue', marker='o')
 x_poly = bx_0 + bx_1 * t + bx_2 * t ** 2  # Polynomial function
-axs2[0].plot(t, x_poly, color='red', label='Polynomial Regression')
+x_poly2 = bx_0_poly + bx_1_poly * t + bx_2_poly * t ** 2
+axs2[0].plot(t, x_poly, color='red', label='Gradient Descent')
+axs2[0].plot(t, x_poly2, color='blue', label='Polynomial Regression')
 axs2[0].set_xlabel('time')
 axs2[0].set_ylabel('x_position')
 axs2[0].legend()
@@ -178,7 +207,9 @@ axs2[0].legend()
 # Plotting y
 axs2[1].scatter(t, y, label='Position of Y', color='red', marker='o')
 y_poly = by_0 + by_1 * t + by_2 * t ** 2  # Polynomial function
-axs2[1].plot(t, y_poly, color='red', label='Polynomial Regression')
+y_poly2 = by_0_poly + by_1_poly * t + by_2_poly * t ** 2
+axs2[1].plot(t, y_poly, color='red', label='Gradient Descent')
+axs2[1].plot(t, y_poly2, color='blue', label='Polynomial Regression')
 axs2[1].set_xlabel('time')
 axs2[1].set_ylabel('y_position')
 axs2[1].legend()
@@ -186,7 +217,9 @@ axs2[1].legend()
 # Plotting z
 axs2[2].scatter(t, z, label='Position of Z', color='green', marker='o')
 z_poly = bz_0 + bz_1 * t + bz_2 * t ** 2  # Polynomial function
-axs2[2].plot(t, z_poly, color='red', label='Polynomial Regression')
+z_poly2 = bz_0_poly + bz_1_poly * t + bz_2_poly * t ** 2
+axs2[2].plot(t, z_poly, color='red', label='Gradient Descent')
+axs2[2].plot(t, z_poly2, color='blue', label='Polynomial Regression')
 axs2[2].set_xlabel('time')
 axs2[2].set_ylabel('z_position')
 axs2[2].legend()
