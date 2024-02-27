@@ -93,7 +93,7 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 
 learning_rate = 0.0005
 iterations = 5000
-def gradient_solver(y, t, learning_rate, max_iter):
+def gradient_solver(y, t, learning_rate, max_iter, tolerance):
     a0 = 0
     a1 = 0
     a2 = 0

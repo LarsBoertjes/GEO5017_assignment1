@@ -93,7 +93,7 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 
 learning_rate = 0.0005
 iterations = 5000
-def gradient_solver(y, t, learning_rate, max_iter):
+def gradient_solver(y, t, learning_rate, max_iter, tolerance):
     a0 = 0
     a1 = 0
     a2 = 0
@@ -108,6 +108,36 @@ def gradient_solver(y, t, learning_rate, max_iter):
         a0 = a0 - learning_rate * D_a0  # update a0
 
     return a0, a1, a2
+
+def gradient_a2(t, y, y_pred):
+    return -2 * sum(t**2 * (y - y_pred))
+
+def gradient_a1(t, y, y_pred):
+    return -2 * sum(t * (y - y_pred))
+
+def gradient_a0(t, y, y_pred):
+    return -2 * sum(y - y_pred)
+
+def gradient_solver2(t, y, learning_rate, max_iter, tolerance, coefficient):
+    if coefficient == 0:
+        a0 = 0
+        y_pred = a0
+        gradient = gradient_a0(t, y, y_pred)
+
+    if coefficient == 1:
+        a1 = 0
+        y_pred = a1 * t
+        gradient = gradient_a1(t, y, y_pred)
+
+    if coefficient == 2:
+        a2 = 0
+        y_pred = a1 * t**2
+        gradient = gradient_a2(t, y, y_pred)
+
+    for i in range(max_iter):
+        a =
+    return
+
 
 def loss_olse(y, y_pred):
     return sum((y - y_pred)**2)
