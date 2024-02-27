@@ -93,7 +93,7 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
 
 learning_rate = 0.0001
-iterations = 200000
+iterations = 100000
 def gradient_solver(y, t, learning_rate, iterations):
     a0 = 0
     a1 = 0
@@ -164,6 +164,7 @@ for ax in axs:
     ax.set_xlim(-0.1, 6.1)
     ax.axhline(y=0, color='grey', linestyle='-', linewidth=0.5)
 
+
 axs[0].scatter(t, x, label='Position of X', color='blue', marker='o')
 axs[0].plot([min(t), max(t)], [predict_speed(ax_0, ax_1_lin, -0.1), predict_speed(ax_0, ax_1_lin, 6.1)], color='red', label='Gradient Descent')
 axs[0].plot([min(t), max(t)], [predict_speed(ax_0_lin, ax_1_lin, -0.1), predict_speed(ax_0_lin, ax_1_lin, 6.1)], color='blue', label='Linear Regression')
@@ -194,12 +195,15 @@ for ax in axs2:
     ax.set_xlim(-0.1, 6)
     ax.axhline(y=0, color='grey', linestyle='-', linewidth=0.5)
 
+t_smooth = np.linspace(min(t), max(t), 1000)
+
 # Plotting x
+
 axs2[0].scatter(t, x, label='Position of X', color='blue', marker='o')
 x_poly = bx_0 + bx_1 * t + bx_2 * t ** 2  # Polynomial function
 x_poly2 = bx_0_poly + bx_1_poly * t + bx_2_poly * t ** 2
-axs2[0].plot(t, x_poly, color='red', label='Gradient Descent')
-axs2[0].plot(t, x_poly2, color='blue', label='Polynomial Regression')
+axs2[0].plot(t_smooth, bx_0_poly + bx_1_poly * t_smooth + bx_2_poly * t_smooth ** 2, color='blue', label='Polynomial Regression')
+axs2[0].plot(t_smooth, bx_0 + bx_1 * t_smooth + bx_2 * t_smooth ** 2, color='red', label='Gradient Descent')
 axs2[0].set_xlabel('time')
 axs2[0].set_ylabel('x_position')
 axs2[0].legend()
@@ -208,8 +212,8 @@ axs2[0].legend()
 axs2[1].scatter(t, y, label='Position of Y', color='red', marker='o')
 y_poly = by_0 + by_1 * t + by_2 * t ** 2  # Polynomial function
 y_poly2 = by_0_poly + by_1_poly * t + by_2_poly * t ** 2
-axs2[1].plot(t, y_poly, color='red', label='Gradient Descent')
-axs2[1].plot(t, y_poly2, color='blue', label='Polynomial Regression')
+axs2[1].plot(t_smooth, by_0_poly + by_1_poly * t_smooth + by_2_poly * t_smooth ** 2, color='blue', label='Polynomial Regression')
+axs2[1].plot(t_smooth, by_0 + by_1 * t_smooth + by_2 * t_smooth ** 2, color='red', label='Gradient Descent')
 axs2[1].set_xlabel('time')
 axs2[1].set_ylabel('y_position')
 axs2[1].legend()
@@ -218,8 +222,8 @@ axs2[1].legend()
 axs2[2].scatter(t, z, label='Position of Z', color='green', marker='o')
 z_poly = bz_0 + bz_1 * t + bz_2 * t ** 2  # Polynomial function
 z_poly2 = bz_0_poly + bz_1_poly * t + bz_2_poly * t ** 2
-axs2[2].plot(t, z_poly, color='red', label='Gradient Descent')
-axs2[2].plot(t, z_poly2, color='blue', label='Polynomial Regression')
+axs2[2].plot(t_smooth, bz_0_poly + bz_1_poly * t_smooth + bz_2_poly * t_smooth ** 2, color='blue', label='Polynomial Regression')
+axs2[2].plot(t_smooth, bz_0 + bz_1 * t_smooth + bz_2 * t_smooth ** 2, color='red', label='Gradient Descent')
 axs2[2].set_xlabel('time')
 axs2[2].set_ylabel('z_position')
 axs2[2].legend()
