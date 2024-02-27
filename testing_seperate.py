@@ -121,22 +121,38 @@ def gradient_a0(t, y, y_pred):
 def gradient_solver2(t, y, learning_rate, max_iter, tolerance, coefficient):
     if coefficient == 0:
         a0 = 0
-        y_pred = a0
-        gradient = gradient_a0(t, y, y_pred)
+        for i in range(max_iter):
+            y_pred = a0
+            step = learning_rate * gradient_a0(t, y, y_pred)
+            if np.abs(step) <= tolerance:
+                break
+            a0 = a0 - step
+
+        return a0
 
     if coefficient == 1:
         a1 = 0
-        y_pred = a1 * t
-        gradient = gradient_a1(t, y, y_pred)
+
+        for i in range(max_iter):
+            y_pred = a1 * t
+            step = learning_rate * gradient_a1(t, y, y_pred)
+            if np.abs(step) <= tolerance:
+                break
+            a1 = a1 - step
+
+        return a1
 
     if coefficient == 2:
         a2 = 0
-        y_pred = a1 * t**2
-        gradient = gradient_a2(t, y, y_pred)
+        for i in range(max_iter):
+            y_pred = a2 * t**2
+            step = learning_rate * gradient_a2(t, y, y_pred)
+            if np.abs(step) <= tolerance:
+                break
+            a2 = a2 - step
 
-    for i in range(max_iter):
-        a =
-    return
+        return a2
+
 
 
 def loss_olse(y, y_pred):
@@ -145,9 +161,24 @@ def loss_olse(y, y_pred):
 def predict_acc(a0, a1, a2, t):
     return a0 + a1 * t + a2 * t**2
 
-bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations)
-by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations)
-bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations)
+lr = 0.0001
+max_it = 100000
+tol = 0.0001
+
+bx_0 = gradient_solver2(t, x, lr, max_it, tol, 0)
+bx_1 = gradient_solver2(t, x, lr, max_it, tol, 1)
+bx_2 = gradient_solver2(t, x, lr, max_it, tol, 2)
+
+
+by_0 = gradient_solver2(t, y, lr, max_it, tol, 0)
+by_1 = gradient_solver2(t, y, lr, max_it, tol, 1)
+by_2 = gradient_solver2(t, y, lr, max_it, tol, 2)
+
+
+bz_0 = gradient_solver2(t, z, lr, max_it, tol, 0)
+bz_1 = gradient_solver2(t, z, lr, max_it, tol, 1)
+bz_2 = gradient_solver2(t, z, lr, max_it, tol, 2)
+
 
 error_x_acc = loss_olse(x, predict_acc(bx_0, bx_1, bx_2, t))
 error_y_acc = loss_olse(y, predict_acc(by_0, by_1, by_2, t))
