@@ -2,10 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from leastsquares import least_squares
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 
 df = pd.read_csv('data/positions.csv')
 
@@ -97,13 +94,8 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
 
 learning_rate = 0.0005
-<<<<<<< Updated upstream
 iterations = 5000
 
-
-def gradient_solver(y, t, learning_rate, max_iter):
-=======
-iterations = 10
 def gradient_solver(y, t, learning_rate, max_iter, tolerance, k):
     coefficients = [0] * (k+1)
 
@@ -130,7 +122,6 @@ def gradient_solver(y, t, learning_rate, max_iter, tolerance, k):
     return tuple(coefficients)
 
 def gradient_solver2(y, t, learning_rate, max_iter, tolerance, k):
->>>>>>> Stashed changes
     a0 = 0
     a1 = 0
     a2 = 0
