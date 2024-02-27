@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
+
 df = pd.read_csv('data/positions.csv')
 
 x = np.array(df['X'])
@@ -92,7 +93,7 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
 
 learning_rate = 0.0005
-iterations = 5000
+iterations = 100
 def gradient_solver(y, t, learning_rate, max_iter):
     a0 = 0
     a1 = 0
@@ -106,6 +107,7 @@ def gradient_solver(y, t, learning_rate, max_iter):
         a2 = a2 - learning_rate * D_a2  # update a2
         a1 = a1 - learning_rate * D_a1  # update a1
         a0 = a0 - learning_rate * D_a0  # update a0
+        print(learning_rate * D_a2, learning_rate * D_a1, learning_rate * D_a0)
 
     return a0, a1, a2
 

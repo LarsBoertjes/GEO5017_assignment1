@@ -96,22 +96,58 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 learning_rate = 0.0005
 iterations = 5000
 
+def gradient_solver(y, t, learning_rate, max_iter, tolerance, k):
+    coefficients = [0] * (k+1)
 
-def gradient_solver(y, t, learning_rate, max_iter):
+    for _ in range(max_iter):
+        print("-", _)
+        y_pred = 0
+
+        for i in range(k + 1):
+            y_pred += coefficients[i] * (t ** i)
+        print(y_pred)
+
+        gradients = [0] * (k + 1)
+        for i in range(k + 1):
+            gradients[i] = -2 * sum(t**i * (y - y_pred))
+
+        print(gradients)
+        step_size = abs(np.array(learning_rate) * np.array(gradients))
+        if sum(step_size) < tolerance:
+            break
+        print(step_size)
+        for i in range(k + 1):
+            coefficients[i] -= step_size[i]
+
+    return tuple(coefficients)
+
+def gradient_solver2(y, t, learning_rate, max_iter, tolerance, k):
     a0 = 0
     a1 = 0
     a2 = 0
 
     for i in range(max_iter):
+        print(i)
         y_pred = a0 + a1 * t + a2 * t**2  # current predicted value of y
+        print('y_pred', y_pred)
         D_a2 = -2 * sum(t**2 * (y - y_pred))  # partial derivative of a2
         D_a1 = -2 * sum(t * (y - y_pred))  # partial derivative of a1
         D_a0 = -2 * sum(y - y_pred)  # partial derivative of a0
-        a2 = a2 - learning_rate * D_a2  # update a2
-        a1 = a1 - learning_rate * D_a1  # update a1
-        a0 = a0 - learning_rate * D_a0  # update a0
+        print('DD', D_a0, D_a1, D_a2)
+        ss2 =  learning_rate * D_a2
+        ss1 =  learning_rate * D_a1
+        ss0 =  learning_rate * D_a0
+        print('ss', ss0, ss1, ss2)
+
+        if abs(ss2 + ss1 + ss0) < tolerance:
+            break
+        a2 = a2 - ss2  # update a2
+        a1 = a1 - ss1  # update a1
+        a0 = a0 - ss0  # update a0
+        print(learning_rate * D_a2, learning_rate * D_a1, learning_rate * D_a0)
 
     return a0, a1, a2
+
 
 def loss_olse(y, y_pred):
     return sum((y - y_pred)**2)
@@ -119,9 +155,26 @@ def loss_olse(y, y_pred):
 def predict_acc(a0, a1, a2, t):
     return a0 + a1 * t + a2 * t**2
 
-bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations)
-by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations)
-bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations)
+bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 2)
+by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 2)
+bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 2)
+
+error_x_acc = loss_olse(x, predict_acc(bx_0, bx_1, bx_2, t))
+error_y_acc = loss_olse(y, predict_acc(by_0, by_1, by_2, t))
+error_z_acc = loss_olse(z, predict_acc(bz_0, bz_1, bz_2, t))
+
+print('gradient descent polynomial')
+print('ax_0 = ', bx_0, 'ax_1 = ', bx_1, 'ax_2 = ', bx_2,
+      'ay_0 = ', by_0, 'ay_1 = ', by_1, 'ay_2 = ', by_2,
+      'az_0 = ', bz_0, 'az_1 = ', bz_1, 'az_2 = ', bz_2, )
+print('acceleration in x-direction = ',bx_2, '\nacceleration in y-direction =',by_2, '\nacceleration in z-direction = ', bz_2,)
+print('errors x y z: ', error_x_acc, error_y_acc, error_z_acc)
+print('next position on t = 6 will be (x,y,z): \n',
+    predict_acc(bx_0, bx_1, bx_2, 6), predict_acc(by_0, by_1, by_2, 6), predict_acc(bz_0, bz_1, bz_2, 6))
+
+bx_0, bx_1, bx_2 = gradient_solver2(x, t, learning_rate, iterations, 0.00000001, 2)
+by_0, by_1, by_2 = gradient_solver2(y, t, learning_rate, iterations, 0.00000001, 2)
+bz_0, bz_1, bz_2 = gradient_solver2(z, t, learning_rate, iterations, 0.00000001, 2)
 
 error_x_acc = loss_olse(x, predict_acc(bx_0, bx_1, bx_2, t))
 error_y_acc = loss_olse(y, predict_acc(by_0, by_1, by_2, t))
