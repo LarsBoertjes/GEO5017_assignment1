@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+from leastsquares import least_squares
+
 
 df = pd.read_csv('data/positions.csv')
 
@@ -33,8 +35,8 @@ def coefficient_finder(y, t, learning_rate, iterations):
 
     for i in range(iterations):
         y_pred = a1 * t + a0  # current predicted value of y
-        D_a1 = -2  * sum(t * (y - y_pred))  # partial derivative of a1
-        D_a0 = -2  * sum(y - y_pred)  # partial derivative of a0
+        D_a1 = -2 * sum(t * (y - y_pred))  # partial derivative of a1
+        D_a0 = -2 * sum(y - y_pred)  # partial derivative of a0
         a1 = a1 - learning_rate * D_a1  # update a1
         a0 = a0 - learning_rate * D_a0  # update a0
 
@@ -93,7 +95,9 @@ print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 
 learning_rate = 0.0005
 iterations = 5000
-def gradient_solver(y, t, learning_rate, max_iter, tolerance):
+
+
+def gradient_solver(y, t, learning_rate, max_iter):
     a0 = 0
     a1 = 0
     a2 = 0
@@ -137,19 +141,15 @@ print('next position on t = 6 will be (x,y,z): \n',
 # polynomial regression method
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
 
-def polynomial_regression(t, y):
-    D = np.vstack((t**0, t**1, t**2)).T
-    y_up = y.T
-    coefficients = np.linalg.inv(D.T @ D) @ D.T @ y_up
-    return coefficients[0], coefficients[1], coefficients[2]
 
-bx_0_poly, bx_1_poly, bx_2_poly = polynomial_regression(t, x)
-by_0_poly, by_1_poly, by_2_poly = polynomial_regression(t, y)
-bz_0_poly, bz_1_poly, bz_2_poly = polynomial_regression(t, z)
+bx_0_poly, bx_1_poly, bx_2_poly = least_squares(t, x, 2)[1]
+by_0_poly, by_1_poly, by_2_poly = least_squares(t, y, 2)[1]
+bz_0_poly, bz_1_poly, bz_2_poly = least_squares(t, z, 2)[1]
 
-error_x_acc2 = loss_olse(x, predict_acc(bx_0_poly, bx_1_poly, bx_2_poly, t))
-error_y_acc2 = loss_olse(y, predict_acc(by_0_poly, by_1_poly, by_2_poly, t))
-error_z_acc2 = loss_olse(z, predict_acc(bz_0_poly, bz_1_poly, bz_2_poly, t))
+error_x_acc2 = least_squares(t, x, 2)[0]
+error_y_acc2 = least_squares(t, y, 2)[0]
+error_z_acc2 = least_squares(t, z, 2)[0]
+
 
 print('polynomial regression')
 print('errors x y z: ', error_x_acc2, error_y_acc2, error_z_acc2)
