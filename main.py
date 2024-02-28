@@ -48,19 +48,13 @@ error_z_speed = loss_olse(z, predict_pos_speed(az_0, az_1, t))
 # if speed is constant then a * t^2 = 0 therefore
 # f(t) = ax_0 + ax_1 * t
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti))^2
+ax_0_ls, ax_1_ls = least_squares(t, x, 1)[1]
+ay_0_ls, ay_1_ls = least_squares(t, y, 1)[1]
+az_0_ls, az_1_ls = least_squares(t, z, 1)[1]
 
-positions = [x, y, z]
-linear_models = []
-errors = []
-
-for position in positions:
-    error_speed_lin, linear_coefficients, positions = least_squares(t, position, 1)
-    a0_lin, a1_lin = linear_coefficients
-    linear_models.append((a0_lin, a1_lin))
-    errors.append(error_speed_lin)
-
-(ax_0_ls, ax_1_ls), (ay_0_ls, ay_1_ls), (az_0_ls, az_1_ls) = linear_models
-error_x_speed_lin, error_y_speed_lin, error_z_speed_lin = errors
+error_x_speed_ls = least_squares(t, x, 1)[0]
+error_y_speed_ls = least_squares(t, y, 1)[0]
+error_z_speed_ls = least_squares(t, z, 1)[0]
 
 
 # 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
@@ -86,52 +80,56 @@ bx_0_ls, bx_1_ls, bx_2_ls = least_squares(t, x, 2)[1]
 by_0_ls, by_1_ls, by_2_ls = least_squares(t, y, 2)[1]
 bz_0_ls, bz_1_ls, bz_2_ls = least_squares(t, z, 2)[1]
 
-error_x_acc2 = least_squares(t, x, 2)[0]
-error_y_acc2 = least_squares(t, y, 2)[0]
-error_z_acc2 = least_squares(t, z, 2)[0]
+error_x_acc_ls = least_squares(t, x, 2)[0]
+error_y_acc_ls = least_squares(t, y, 2)[0]
+error_z_acc_ls = least_squares(t, z, 2)[0]
 
 # 2.2c next position
+
+next_position = (predict_pos_acc(bx_0, bx_1, bx_2, 6),
+                 predict_pos_acc(by_0, by_1, by_2, 6),
+                 predict_pos_acc(bz_0, bz_1, bz_2, 6))
+
+x_next = np.append(x, next_position[0])
+y_next = np.append(y, next_position[1])
+z_next = np.append(z, next_position[2])
+
+plot_trajectory(x_next, y_next, z_next)
 
 
 
 # Plotting the X, Y and Z measured positions and predicted positions
-
 # For assumed constant speed
 parameters_speed = [ax_0, ax_1, ay_0, ay_1, az_0, az_1, ax_0_ls, ax_1_ls, ay_0_ls, ay_1_ls, az_0_ls, az_1_ls]
 plot_positions_with_constant_speed(t, x, y, z, parameters_speed)
 
 # For assumed constant acceleration
-
 parameters_acc = [bx_0, bx_1, bx_2, by_0, by_1, by_2, bz_0, bz_1, bz_2,
                   bx_0_ls, bx_1_ls, bx_2_ls, by_0_ls, by_1_ls, by_2_ls, bz_0_ls, bz_1_ls, bz_2_ls]
 plot_positions_with_constant_acceleration(t, x, y, z, parameters_acc)
 
-# printing all output data
-print('ax_0 = ', ax_0, ' ax_1 = ', ax_1, 'ay_0 = ', ay_0, 'ay_1 = ', ay_1, 'az_0 = ', az_0, 'az_1 = ', az_1)
-print('velocity in x-direction = ',ax_1, '\nvelocity in y-direction =',ay_1, '\nvelocity in z-direction = ', az_1,)
-print('errors x y z: ', error_x_speed, error_y_speed, error_z_speed)
-def print_speed_constant_linear(a0, a1, error):
-    print("Speed Constant Linear Formula:")
+
+# Printing all output data
+def print_speed_constant_linear(dim, a0, a1, error):
+    print(f"Speed Constant Linear Formula for {dim}:")
     print(f"y = {round(a0, 3)} + {round(a1, 3)}*t")
-    print(f"Error: {error}")
+    print(f"Speed  = {round(a1, 3)} m/s ")
+    print(f"Error: {round(error, 3)}\n")
 
-print_speed_constant_linear(ax_0_ls, ax_1_ls, error_x_speed_lin)
-print_speed_constant_linear(ay_0_ls, ay_1_ls, error_y_speed_lin)
-print_speed_constant_linear(az_0_ls, az_1_ls, error_z_speed_lin)
+def print_speed_constant_acc(dim, a0, a1, a2, error):
+    print(f"Acceleration Constant Formula for {dim}:")
+    print(f"y = {round(a0, 3)} + {round(a1, 3)}*t + {round(a2, 3)}*t^2")
+    print(f"Acceleration = {round((2 * a2), 3)} m/s^2 ")
+    print(f"Error: {round(error, 3)}\n")
 
-print("\nVelocities in Each Direction:")
-print(f"Velocity in X-direction: {ax_1_ls}")
-print(f"Velocity in Y-direction: {ay_1_ls}")
-print(f"Velocity in Z-direction: {az_1_ls}")
+print('Assuming constant speed and using gradient descent to solve:')
+print_speed_constant_linear('X', ax_0, ax_1, error_x_speed)
+print_speed_constant_linear('Y', ay_0, ay_1, error_y_speed)
+print_speed_constant_linear('Z', az_0, az_1, error_z_speed)
 
-print('gradient descent polynomial')
-print('ax_0 = ', bx_0, 'ax_1 = ', bx_1, 'ax_2 = ', bx_2,
-      'ay_0 = ', by_0, 'ay_1 = ', by_1, 'ay_2 = ', by_2,
-      'az_0 = ', bz_0, 'az_1 = ', bz_1, 'az_2 = ', bz_2, )
-print('acceleration in x-direction = ',bx_2, '\nacceleration in y-direction =',by_2, '\nacceleration in z-direction = ', bz_2,)
-print('errors x y z: ', error_x_acc, error_y_acc, error_z_acc)
-print('next position on t = 6 will be (x,y,z): \n',
-    predict_pos_acc(bx_0, bx_1, bx_2, 6), predict_pos_acc(by_0, by_1, by_2, 6), predict_pos_acc(bz_0, bz_1, bz_2, 6))
-
-print('polynomial regression')
-print('errors x y z: ', error_x_acc2, error_y_acc2, error_z_acc2)
+print('\n\nAssuming constant acceleration and using gradient descent to solve:')
+print_speed_constant_acc('X', bx_0, bx_1, bx_2, error_x_acc)
+print_speed_constant_acc('Y', by_0, by_1, by_2, error_y_acc)
+print_speed_constant_acc('Z', bz_0, bz_1, bz_2, error_z_acc)
+print(f'\nThe predicted next position (x, y, z) = ({round(next_position[0], 3)}, '
+      f'{round(next_position[1], 3)}, {round(next_position[2], 3)}) ')

@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 def predict_pos_speed(a0, a1, t):
@@ -15,10 +16,10 @@ def plot_trajectory(x, y, z):
     Plot the trajectory based on given arrays.
     """
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+    ax = fig.add_subplot(111, projection='3d', proj_type='ortho')
 
+    ax.view_init(elev=30, azim=50)
     ax.plot(x, y, z)
-
     ax.set_xlabel('X Position')
     ax.set_ylabel('Y Position')
     ax.set_zlabel('Z Position')
@@ -73,7 +74,7 @@ def plot_positions_with_constant_acceleration(t, x, y, z, p):
         ax.set_xlim(-0.1, 6)
         ax.axhline(y=0, color='grey', linestyle='-', linewidth=0.5)
 
-    t_smooth = np.linspace(min(t), max(t), 1000)
+    t_smooth = np.linspace(-0.1, 6, 1000)
 
     # Plotting x
 

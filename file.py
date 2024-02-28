@@ -18,6 +18,7 @@ ax.set_xlabel('X Position')
 ax.set_ylabel('Y Position')
 ax.set_zlabel('Z Position')
 ax.set_title('Trajectory Plot')
+ax.view_init(elev=20, azim=90)
 plt.show()
 
 
