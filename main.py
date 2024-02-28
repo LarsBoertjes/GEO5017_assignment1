@@ -1,8 +1,21 @@
-import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from leastsquares import least_squares
 from gradient_solver import gradient_solver_a1, gradient_solver_a2
+from plotting import plot_trajectory, plot_positions_with_constant_speed,  plot_positions_with_constant_acceleration
+
+
+def predict_pos_speed(a0, a1, t):
+    return a0 + a1 * t
+
+
+def predict_pos_acc(a0, a1, a2, t):
+    return a0 + a1 * t + a2 * t**2
+
+
+def loss_olse(y, y_pred):
+    return sum((y - y_pred)**2)
+
 
 # 2.0 Reading the given position data
 df = pd.read_csv('data/positions.csv')
@@ -13,23 +26,12 @@ z = np.array(df['Z'])
 t = np.arange(0, len(x))
 
 # 2.1 Plot trajectory
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.plot(x, y, z)
-ax.set_xlabel('X Position')
-ax.set_ylabel('Y Position')
-ax.set_zlabel('Z Position')
-ax.set_title('Trajectory Plot')
-plt.show()
-
+plot_trajectory(x, y, z)
 
 # 2.2a assume constant speed linear regression with gradient descent
 # if speed is constant then a * t^2 = 0 therefore
 # f(t) = ax_0 + ax_1 * t
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti))^2
-
-def predict_speed(a0, a1, t):
-    return a0 + a1 * t
 
 learning_rate = 0.001
 iterations = 10000
@@ -38,15 +40,11 @@ ax_0, ax_1 = gradient_solver_a1(x, t, learning_rate, iterations, 0.000001)
 ay_0, ay_1 = gradient_solver_a1(y, t, learning_rate, iterations, 0.000001)
 az_0, az_1 = gradient_solver_a1(z, t, learning_rate, iterations, 0.000001)
 
-error_x_speed = sum((x - predict_speed(ax_0, ax_1, t))**2)
-error_y_speed = sum((y - predict_speed(ay_0, ay_1, t))**2)
-error_z_speed = sum((z - predict_speed(az_0, az_1, t))**2)
+error_x_speed = loss_olse(x, predict_pos_speed(ax_0, ax_1, t))
+error_y_speed = loss_olse(y, predict_pos_speed(ay_0, ay_1, t))
+error_z_speed = loss_olse(z, predict_pos_speed(az_0, az_1, t))
 
-print('ax_0 = ', ax_0, ' ax_1 = ', ax_1, 'ay_0 = ', ay_0, 'ay_1 = ', ay_1, 'az_0 = ', az_0, 'az_1 = ', az_1)
-print('velocity in x-direction = ',ax_1, '\nvelocity in y-direction =',ay_1, '\nvelocity in z-direction = ', az_1,)
-print('errors x y z: ', error_x_speed, error_y_speed, error_z_speed)
-
-# 2.2a assume constant speed linear regression with linear regression
+# 2.2a assume constant speed linear regression with polynomial regression
 # if speed is constant then a * t^2 = 0 therefore
 # f(t) = ax_0 + ax_1 * t
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti))^2
@@ -61,23 +59,9 @@ for position in positions:
     linear_models.append((a0_lin, a1_lin))
     errors.append(error_speed_lin)
 
-(ax_0_lin, ax_1_lin), (ay_0_lin, ay_1_lin), (az_0_lin, az_1_lin) = linear_models
+(ax_0_ls, ax_1_ls), (ay_0_ls, ay_1_ls), (az_0_ls, az_1_ls) = linear_models
 error_x_speed_lin, error_y_speed_lin, error_z_speed_lin = errors
 
-
-def print_speed_constant_linear(a0, a1, error):
-    print("Speed Constant Linear Formula:")
-    print(f"y = {round(a0, 3)} + {round(a1, 3)}*t")
-    print(f"Error: {error}")
-
-print_speed_constant_linear(ax_0_lin, ax_1_lin, error_x_speed_lin)
-print_speed_constant_linear(ay_0_lin, ay_1_lin, error_y_speed_lin)
-print_speed_constant_linear(az_0_lin, az_1_lin, error_z_speed_lin)
-
-print("\nVelocities in Each Direction:")
-print(f"Velocity in X-direction: {ax_1_lin}")
-print(f"Velocity in Y-direction: {ay_1_lin}")
-print(f"Velocity in Z-direction: {az_1_lin}")
 
 # 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
 # gradient descent method
@@ -86,19 +70,59 @@ print(f"Velocity in Z-direction: {az_1_lin}")
 learning_rate = 0.0005
 iterations = 5000
 
-def loss_olse(y, y_pred):
-    return sum((y - y_pred)**2)
-
-def predict_acc(a0, a1, a2, t):
-    return a0 + a1 * t + a2 * t**2
-
 bx_0, bx_1, bx_2 = gradient_solver_a2(x, t, learning_rate, iterations, 0.00000001)
 by_0, by_1, by_2 = gradient_solver_a2(y, t, learning_rate, iterations, 0.00000001)
 bz_0, bz_1, bz_2 = gradient_solver_a2(z, t, learning_rate, iterations, 0.00000001)
 
-error_x_acc = loss_olse(x, predict_acc(bx_0, bx_1, bx_2, t))
-error_y_acc = loss_olse(y, predict_acc(by_0, by_1, by_2, t))
-error_z_acc = loss_olse(z, predict_acc(bz_0, bz_1, bz_2, t))
+error_x_acc = loss_olse(x, predict_pos_acc(bx_0, bx_1, bx_2, t))
+error_y_acc = loss_olse(y, predict_pos_acc(by_0, by_1, by_2, t))
+error_z_acc = loss_olse(z, predict_pos_acc(bz_0, bz_1, bz_2, t))
+
+# 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
+# polynomial regression method
+# objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
+
+bx_0_ls, bx_1_ls, bx_2_ls = least_squares(t, x, 2)[1]
+by_0_ls, by_1_ls, by_2_ls = least_squares(t, y, 2)[1]
+bz_0_ls, bz_1_ls, bz_2_ls = least_squares(t, z, 2)[1]
+
+error_x_acc2 = least_squares(t, x, 2)[0]
+error_y_acc2 = least_squares(t, y, 2)[0]
+error_z_acc2 = least_squares(t, z, 2)[0]
+
+# 2.2c next position
+
+
+
+# Plotting the X, Y and Z measured positions and predicted positions
+
+# For assumed constant speed
+parameters_speed = [ax_0, ax_1, ay_0, ay_1, az_0, az_1, ax_0_ls, ax_1_ls, ay_0_ls, ay_1_ls, az_0_ls, az_1_ls]
+plot_positions_with_constant_speed(t, x, y, z, parameters_speed)
+
+# For assumed constant acceleration
+
+parameters_acc = [bx_0, bx_1, bx_2, by_0, by_1, by_2, bz_0, bz_1, bz_2,
+                  bx_0_ls, bx_1_ls, bx_2_ls, by_0_ls, by_1_ls, by_2_ls, bz_0_ls, bz_1_ls, bz_2_ls]
+plot_positions_with_constant_acceleration(t, x, y, z, parameters_acc)
+
+# printing all output data
+print('ax_0 = ', ax_0, ' ax_1 = ', ax_1, 'ay_0 = ', ay_0, 'ay_1 = ', ay_1, 'az_0 = ', az_0, 'az_1 = ', az_1)
+print('velocity in x-direction = ',ax_1, '\nvelocity in y-direction =',ay_1, '\nvelocity in z-direction = ', az_1,)
+print('errors x y z: ', error_x_speed, error_y_speed, error_z_speed)
+def print_speed_constant_linear(a0, a1, error):
+    print("Speed Constant Linear Formula:")
+    print(f"y = {round(a0, 3)} + {round(a1, 3)}*t")
+    print(f"Error: {error}")
+
+print_speed_constant_linear(ax_0_ls, ax_1_ls, error_x_speed_lin)
+print_speed_constant_linear(ay_0_ls, ay_1_ls, error_y_speed_lin)
+print_speed_constant_linear(az_0_ls, az_1_ls, error_z_speed_lin)
+
+print("\nVelocities in Each Direction:")
+print(f"Velocity in X-direction: {ax_1_ls}")
+print(f"Velocity in Y-direction: {ay_1_ls}")
+print(f"Velocity in Z-direction: {az_1_ls}")
 
 print('gradient descent polynomial')
 print('ax_0 = ', bx_0, 'ax_1 = ', bx_1, 'ax_2 = ', bx_2,
@@ -107,94 +131,7 @@ print('ax_0 = ', bx_0, 'ax_1 = ', bx_1, 'ax_2 = ', bx_2,
 print('acceleration in x-direction = ',bx_2, '\nacceleration in y-direction =',by_2, '\nacceleration in z-direction = ', bz_2,)
 print('errors x y z: ', error_x_acc, error_y_acc, error_z_acc)
 print('next position on t = 6 will be (x,y,z): \n',
-    predict_acc(bx_0, bx_1, bx_2, 6), predict_acc(by_0, by_1, by_2, 6), predict_acc(bz_0, bz_1, bz_2, 6))
-
-# 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
-# polynomial regression method
-# objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
-
-
-bx_0_poly, bx_1_poly, bx_2_poly = least_squares(t, x, 2)[1]
-by_0_poly, by_1_poly, by_2_poly = least_squares(t, y, 2)[1]
-bz_0_poly, bz_1_poly, bz_2_poly = least_squares(t, z, 2)[1]
-
-error_x_acc2 = least_squares(t, x, 2)[0]
-error_y_acc2 = least_squares(t, y, 2)[0]
-error_z_acc2 = least_squares(t, z, 2)[0]
-
+    predict_pos_acc(bx_0, bx_1, bx_2, 6), predict_pos_acc(by_0, by_1, by_2, 6), predict_pos_acc(bz_0, bz_1, bz_2, 6))
 
 print('polynomial regression')
 print('errors x y z: ', error_x_acc2, error_y_acc2, error_z_acc2)
-
-fig, axs = plt.subplots(1, 3, figsize=(20, 5))
-fig.suptitle('Position of X, Y, and Z')
-
-for ax in axs:
-    ax.set_xlim(-0.1, 6.1)
-    ax.axhline(y=0, color='grey', linestyle='-', linewidth=0.5)
-
-
-axs[0].scatter(t, x, label='Position of X', color='blue', marker='o')
-axs[0].plot([min(t), max(t)], [predict_speed(ax_0, ax_1_lin, -0.1), predict_speed(ax_0, ax_1_lin, 6.1)], color='red', label='Gradient Descent')
-axs[0].plot([min(t), max(t)], [predict_speed(ax_0_lin, ax_1_lin, -0.1), predict_speed(ax_0_lin, ax_1_lin, 6.1)], color='blue', label='Linear Regression')
-axs[0].set_xlabel('time')
-axs[0].set_ylabel('x_position')
-axs[0].legend()
-
-axs[1].scatter(t, y, label='Position of Y', color='red', marker='o')
-axs[1].plot([min(t), max(t)], [predict_speed(ay_0, ay_1, -0.1), predict_speed(ay_0, ay_1, 6.1)], color='red', label='Gradient Descent')
-axs[1].plot([min(t), max(t)], [predict_speed(ay_0_lin, ay_1_lin, -0.1), predict_speed(ay_0_lin, ay_1_lin, 6.1)], color='blue', label='Linear Regression')
-axs[1].set_xlabel('time')
-axs[1].set_ylabel('y_position')
-axs[1].legend()
-
-axs[2].scatter(t, z, label='Position of Z', color='green', marker='o')
-axs[2].plot([min(t), max(t)], [predict_speed(az_0, az_1, -0.1), predict_speed(az_0, az_1, 6.1)], color='red', label='Gradient Descent')
-axs[2].plot([min(t), max(t)], [predict_speed(az_0_lin, az_1_lin, -0.1), predict_speed(az_0_lin, az_1_lin, 6.1)], color='blue', label='Linear Regression')
-axs[2].set_xlabel('time')
-axs[2].set_ylabel('z_position')
-axs[2].legend()
-
-plt.show()
-
-fig, axs2 = plt.subplots(1, 3, figsize=(20, 5))
-fig.suptitle('Position of X, Y, and Z')
-
-for ax in axs2:
-    ax.set_xlim(-0.1, 6)
-    ax.axhline(y=0, color='grey', linestyle='-', linewidth=0.5)
-
-t_smooth = np.linspace(min(t), max(t), 1000)
-
-# Plotting x
-
-axs2[0].scatter(t, x, label='Position of X', color='blue', marker='o')
-x_poly = bx_0 + bx_1 * t + bx_2 * t ** 2  # Polynomial function
-x_poly2 = bx_0_poly + bx_1_poly * t + bx_2_poly * t ** 2
-axs2[0].plot(t_smooth, bx_0_poly + bx_1_poly * t_smooth + bx_2_poly * t_smooth ** 2, color='blue', label='Polynomial Regression')
-axs2[0].plot(t_smooth, bx_0 + bx_1 * t_smooth + bx_2 * t_smooth ** 2, color='red', label='Gradient Descent')
-axs2[0].set_xlabel('time')
-axs2[0].set_ylabel('x_position')
-axs2[0].legend()
-
-# Plotting y
-axs2[1].scatter(t, y, label='Position of Y', color='red', marker='o')
-y_poly = by_0 + by_1 * t + by_2 * t ** 2  # Polynomial function
-y_poly2 = by_0_poly + by_1_poly * t + by_2_poly * t ** 2
-axs2[1].plot(t_smooth, by_0_poly + by_1_poly * t_smooth + by_2_poly * t_smooth ** 2, color='blue', label='Polynomial Regression')
-axs2[1].plot(t_smooth, by_0 + by_1 * t_smooth + by_2 * t_smooth ** 2, color='red', label='Gradient Descent')
-axs2[1].set_xlabel('time')
-axs2[1].set_ylabel('y_position')
-axs2[1].legend()
-
-# Plotting z
-axs2[2].scatter(t, z, label='Position of Z', color='green', marker='o')
-z_poly = bz_0 + bz_1 * t + bz_2 * t ** 2  # Polynomial function
-z_poly2 = bz_0_poly + bz_1_poly * t + bz_2_poly * t ** 2
-axs2[2].plot(t_smooth, bz_0_poly + bz_1_poly * t_smooth + bz_2_poly * t_smooth ** 2, color='blue', label='Polynomial Regression')
-axs2[2].plot(t_smooth, bz_0 + bz_1 * t_smooth + bz_2 * t_smooth ** 2, color='red', label='Gradient Descent')
-axs2[2].set_xlabel('time')
-axs2[2].set_ylabel('z_position')
-axs2[2].legend()
-
-plt.show()
