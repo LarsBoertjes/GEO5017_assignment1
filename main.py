@@ -31,17 +31,16 @@ plt.show()
 def predict_speed(a0, a1, t):
     return a0 + a1 * t
 
-learning_rate = 0.01
-iterations = 100
+learning_rate = 0.001
+iterations = 10000
 
-ax_0, ax_1 = gradient_solver_a1(x, t, learning_rate, iterations, 0.0001)
-ay_0, ay_1 = gradient_solver_a1(y, t, learning_rate, iterations, 0.0001)
-az_0, az_1 = gradient_solver_a1(z, t, learning_rate, iterations, 0.0001)
+ax_0, ax_1 = gradient_solver_a1(x, t, learning_rate, iterations, 0.000001)
+ay_0, ay_1 = gradient_solver_a1(y, t, learning_rate, iterations, 0.000001)
+az_0, az_1 = gradient_solver_a1(z, t, learning_rate, iterations, 0.000001)
 
 error_x_speed = sum((x - predict_speed(ax_0, ax_1, t))**2)
 error_y_speed = sum((y - predict_speed(ay_0, ay_1, t))**2)
 error_z_speed = sum((z - predict_speed(az_0, az_1, t))**2)
-
 
 print('ax_0 = ', ax_0, ' ax_1 = ', ax_1, 'ay_0 = ', ay_0, 'ay_1 = ', ay_1, 'az_0 = ', az_0, 'az_1 = ', az_1)
 print('velocity in x-direction = ',ax_1, '\nvelocity in y-direction =',ay_1, '\nvelocity in z-direction = ', az_1,)
@@ -52,27 +51,33 @@ print('errors x y z: ', error_x_speed, error_y_speed, error_z_speed)
 # f(t) = ax_0 + ax_1 * t
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti))^2
 
-def calculate_coefficients_linear(t, y):
-    cov_ty = np.cov(t, y, ddof=1)[0][1]
-    var_t = np.var(t, ddof=1, dtype=float)
-    a1 = cov_ty / var_t
-    a0 = np.mean(y) - a1 * np.mean(t)
-    # print(np.cov(t, y, bias=True), 'cov', cov_ty, 'var_t', var_t, 'a0', a0, 'a1', a1, 'mean', np.mean(t))
-    return a0, a1
+positions = [x, y, z]
+linear_models = []
+errors = []
 
-ax_0_lin, ax_1_lin = calculate_coefficients_linear(t, x)
-ay_0_lin, ay_1_lin = calculate_coefficients_linear(t, y)
-az_0_lin, az_1_lin = calculate_coefficients_linear(t, z)
+for position in positions:
+    error_speed_lin, linear_coefficients, positions = least_squares(t, position, 1)
+    a0_lin, a1_lin = linear_coefficients
+    linear_models.append((a0_lin, a1_lin))
+    errors.append(error_speed_lin)
 
-error_x_speed_lin = sum((x - predict_speed(ax_0_lin, ax_1_lin, t))**2)
-error_y_speed_lin = sum((y - predict_speed(ay_0_lin, ay_1_lin, t))**2)
-error_z_speed_lin = sum((z - predict_speed(az_0_lin, az_1_lin, t))**2)
+(ax_0_lin, ax_1_lin), (ay_0_lin, ay_1_lin), (az_0_lin, az_1_lin) = linear_models
+error_x_speed_lin, error_y_speed_lin, error_z_speed_lin = errors
 
-print('speed constant linear')
-print('ax_0 = ', ax_0_lin, ' ax_1 = ', ax_1_lin, 'ay_0 = ', ay_0_lin, 'ay_1 = ', ay_1_lin, 'az_0 = ', az_0_lin, 'az_1 = ', az_1_lin)
-print('velocity in x-direction = ',ax_1_lin, '\nvelocity in y-direction =',ay_1_lin, '\nvelocity in z-direction = ', az_1_lin,)
-print('errors x y z: ', error_x_speed_lin, error_y_speed_lin, error_z_speed_lin)
 
+def print_speed_constant_linear(a0, a1, error):
+    print("Speed Constant Linear Formula:")
+    print(f"y = {round(a0, 3)} + {round(a1, 3)}*t")
+    print(f"Error: {error}")
+
+print_speed_constant_linear(ax_0_lin, ax_1_lin, error_x_speed_lin)
+print_speed_constant_linear(ay_0_lin, ay_1_lin, error_y_speed_lin)
+print_speed_constant_linear(az_0_lin, az_1_lin, error_z_speed_lin)
+
+print("\nVelocities in Each Direction:")
+print(f"Velocity in X-direction: {ax_1_lin}")
+print(f"Velocity in Y-direction: {ay_1_lin}")
+print(f"Velocity in Z-direction: {az_1_lin}")
 
 # 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
 # gradient descent method
@@ -87,9 +92,9 @@ def loss_olse(y, y_pred):
 def predict_acc(a0, a1, a2, t):
     return a0 + a1 * t + a2 * t**2
 
-bx_0, bx_1, bx_2 = gradient_solver_a1(x, t, learning_rate, iterations, 0.00000001)
-by_0, by_1, by_2 = gradient_solver_a1(y, t, learning_rate, iterations, 0.00000001)
-bz_0, bz_1, bz_2 = gradient_solver_a1(z, t, learning_rate, iterations, 0.00000001)
+bx_0, bx_1, bx_2 = gradient_solver_a2(x, t, learning_rate, iterations, 0.00000001)
+by_0, by_1, by_2 = gradient_solver_a2(y, t, learning_rate, iterations, 0.00000001)
+bz_0, bz_1, bz_2 = gradient_solver_a2(z, t, learning_rate, iterations, 0.00000001)
 
 error_x_acc = loss_olse(x, predict_acc(bx_0, bx_1, bx_2, t))
 error_y_acc = loss_olse(y, predict_acc(by_0, by_1, by_2, t))
