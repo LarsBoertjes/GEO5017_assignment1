@@ -11,32 +11,3 @@ def least_squares(input_values, output_values, k):
     residuals = sum((output_values - predicted_values)**2)
 
     return residuals, param, predicted_values
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

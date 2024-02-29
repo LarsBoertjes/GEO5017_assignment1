@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 
 def predict_pos_speed(a0, a1, t):
@@ -91,9 +90,10 @@ def plot_trajectory_original(x, y, z):
     ax.set_title('Drone Position Trajectory', fontsize=14)
 
     # Legend
-    #ax.legend(loc="upper left", fontsize=10, frameon=True)
+    # ax.legend(loc="upper left", fontsize=10, frameon=True)
 
     plt.show()
+
 
 def plot_positions_with_constant_speed(t, x, y, z, p):
     """
