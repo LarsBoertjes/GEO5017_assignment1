@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from leastsquares import least_squares
 from gradient_solver import gradient_solver_a1, gradient_solver_a2
-from plotting import plot_trajectory, plot_trajectory_predicted, plot_positions_with_constant_speed,  plot_positions_with_constant_acceleration
+from plotting import plot_trajectory, plot_trajectory_predicted, plot_trajectory_original, plot_positions_with_constant_speed,  plot_positions_with_constant_acceleration
 
 
 def predict_pos_speed(a0, a1, t):
@@ -26,7 +26,7 @@ z = np.array(df['Z'])
 t = np.arange(0, len(x))
 
 # 2.1 Plot trajectory
-plot_trajectory(x, y, z)
+#plot_trajectory(x, y, z)
 
 # 2.2a assume constant speed linear regression with gradient descent
 # if speed is constant then a * t^2 = 0 therefore
@@ -61,8 +61,11 @@ error_z_speed_ls = least_squares(t, z, 1)[0]
 # gradient descent method
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
 
+#learning_rate = 0.0005
+#iterations = 5000
+
 learning_rate = 0.0005
-iterations = 5000
+iterations = 2000000
 
 bx_0, bx_1, bx_2 = gradient_solver_a2(x, t, learning_rate, iterations, 0.00000001)
 by_0, by_1, by_2 = gradient_solver_a2(y, t, learning_rate, iterations, 0.00000001)
@@ -94,8 +97,9 @@ x_next = np.append(x, next_position[0])
 y_next = np.append(y, next_position[1])
 z_next = np.append(z, next_position[2])
 
-plot_trajectory(x_next, y_next, z_next)
 plot_trajectory_predicted(x_next, y_next, z_next)
+plot_trajectory_original(x_next, y_next, z_next)
+
 
 
 # Plotting the X, Y and Z measured positions and predicted positions
