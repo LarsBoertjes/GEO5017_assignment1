@@ -28,6 +28,40 @@ def plot_trajectory(x, y, z):
     plt.show()
 
 
+def plot_trajectory_predicted(x, y, z):
+    """
+    Plot the trajectory based on given arrays, including a predicted next position.
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d', proj_type='ortho')
+
+    # plot all but the last point (given positions in our case)
+    ax.plot(x[:-1], y[:-1], z[:-1], c='r', linestyle='-',
+            linewidth=2, marker='o', markersize=8, label='Given Trajectory')
+
+    # plot the last point in a different color (predicted position)
+    ax.scatter(x[-1], y[-1], z[-1], c='b', s=100, marker='^', label='Predicted Position')
+
+    # plot dashed line between last given position and predicted position
+    ax.plot([x[-2], x[-1]], [y[-2], y[-1]], [z[-2], z[-1]],
+            c='grey', linestyle='--', linewidth=2)
+
+    # View and style
+    ax.view_init(elev=30, azim=40)
+    ax.grid(True)
+
+    # Labels and title
+    ax.set_xlabel('X Position', fontsize=12)
+    ax.set_ylabel('Y Position', fontsize=12)
+    ax.set_zlabel('Z Position', fontsize=12)
+    ax.set_title('Drone Position Trajectory', fontsize=14)
+
+    # Legend
+    ax.legend(loc="upper left", fontsize=10, frameon=True)
+
+    plt.show()
+
+
 def plot_positions_with_constant_speed(t, x, y, z, p):
     """
     Plot the measured and predicted positions of X, Y, and Z when constant speed is assumed.

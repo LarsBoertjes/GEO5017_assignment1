@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from leastsquares import least_squares
 from gradient_solver import gradient_solver_a1, gradient_solver_a2
-from plotting import plot_trajectory, plot_positions_with_constant_speed,  plot_positions_with_constant_acceleration
+from plotting import plot_trajectory, plot_trajectory_predicted, plot_positions_with_constant_speed,  plot_positions_with_constant_acceleration
 
 
 def predict_pos_speed(a0, a1, t):
@@ -44,7 +44,7 @@ error_x_speed = loss_olse(x, predict_pos_speed(ax_0, ax_1, t))
 error_y_speed = loss_olse(y, predict_pos_speed(ay_0, ay_1, t))
 error_z_speed = loss_olse(z, predict_pos_speed(az_0, az_1, t))
 
-# 2.2a assume constant speed linear regression with polynomial regression
+# 2.2a assume constant speed linear regression with least squares
 # if speed is constant then a * t^2 = 0 therefore
 # f(t) = ax_0 + ax_1 * t
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti))^2
@@ -73,7 +73,7 @@ error_y_acc = loss_olse(y, predict_pos_acc(by_0, by_1, by_2, t))
 error_z_acc = loss_olse(z, predict_pos_acc(bz_0, bz_1, bz_2, t))
 
 # 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
-# polynomial regression method
+# least squares method
 # objective function/loss is ordinary squared error  = (sum (xi - (ax_0 + ax_1 * ti + ax_2 * ti^2 ))^2
 
 bx_0_ls, bx_1_ls, bx_2_ls = least_squares(t, x, 2)[1]
@@ -95,7 +95,7 @@ y_next = np.append(y, next_position[1])
 z_next = np.append(z, next_position[2])
 
 plot_trajectory(x_next, y_next, z_next)
-
+plot_trajectory_predicted(x_next, y_next, z_next)
 
 
 # Plotting the X, Y and Z measured positions and predicted positions
