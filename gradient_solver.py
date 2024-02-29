@@ -1,29 +1,24 @@
 import numpy as np
 def gradient_solver(y, t, learning_rate, max_iter, tolerance, k):
-    #  not working :(
-    coefficients = [0] * (k+1)
+    parameters = [0] * (k+1)
 
     for _ in range(max_iter):
-        print("-", _)
         y_pred = 0
 
         for i in range(k + 1):
-            y_pred += coefficients[i] * (t ** i)
-        print(y_pred)
+            y_pred += parameters[i] * (t ** i)
 
         gradients = [0] * (k + 1)
         for i in range(k + 1):
             gradients[i] = -2 * sum(t**i * (y - y_pred))
 
-        print(gradients)
-        step_size = abs(np.array(learning_rate) * np.array(gradients))
-        if sum(step_size) < tolerance:
+        step_size = learning_rate * np.array(gradients)
+        if np.linalg.norm(step_size) < tolerance:
             break
-        print(step_size)
         for i in range(k + 1):
-            coefficients[i] -= step_size[i]
+            parameters[i] -= step_size[i]
 
-    return tuple(coefficients)
+    return tuple(parameters)
 
 def gradient_solver_a1(y, t, learning_rate, max_iter, tolerance):
     a0 = 0
