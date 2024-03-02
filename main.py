@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from leastsquares import least_squares
-from gradient_solver import gradient_solver
-from plotting import (plot_trajectory_predicted, plot_trajectory_original,
+from gradient_solver import gradient_solver, gradient_solver_including_errors
+from plotting import (plot_trajectory_predicted, plot_trajectory_original, residuals_vs_iterations,
                       plot_positions_with_constant_speed,  plot_positions_with_constant_acceleration)
 
 
@@ -66,11 +66,16 @@ error_z_speed_ls = least_squares(t, z, 1)[0]
 # iterations = 5000
 
 learning_rate = 0.0005
-iterations = 2000000
+iterations = 18000
 
 bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 2)
 by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 2)
 bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 2)
+
+# error array x,y,z direction for plotting against iterations later
+errors_x = gradient_solver_including_errors(x, t, learning_rate, iterations, 0.00000001, 2)[1]
+errors_y = gradient_solver_including_errors(y, t, learning_rate, iterations, 0.00000001, 2)[1]
+errors_z = gradient_solver_including_errors(z, t, learning_rate, iterations, 0.00000001, 2)[1]
 
 error_x_acc = loss_olse(x, predict_pos_acc(bx_0, bx_1, bx_2, t))
 error_y_acc = loss_olse(y, predict_pos_acc(by_0, by_1, by_2, t))
@@ -139,3 +144,11 @@ print_speed_constant_acc('Y', by_0, by_1, by_2, error_y_acc)
 print_speed_constant_acc('Z', bz_0, bz_1, bz_2, error_z_acc)
 print(f'\nThe predicted next position (x, y, z) = ({round(next_position[0], 3)}, '
       f'{round(next_position[1], 3)}, {round(next_position[2], 3)}) ')
+
+print(f"Size array x: {len(errors_x)}, thus also the maximum number of iterations")
+print(f"Size array y: {len(errors_y)}, thus also the maximum number of iterations")
+print(f"Size array z: {len(errors_z)}, thus also the maximum number of iterations")
+
+residuals_vs_iterations(errors_x, errors_y, errors_z)
+
+print(errors_x[0], errors_y[0], errors_z[0])

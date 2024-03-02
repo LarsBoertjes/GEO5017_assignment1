@@ -172,3 +172,26 @@ def plot_positions_with_constant_acceleration(t, x, y, z, p):
     axs2[2].legend()
 
     plt.show()
+
+
+def residuals_vs_iterations(x_residuals, y_residuals, z_residuals):
+    plt.figure(figsize=(10, 6))
+    plt.plot(x_residuals, label='X residuals')
+    plt.plot(y_residuals, label='Y residuals')
+    plt.plot(z_residuals, label='Z residuals')
+
+    # Plotting a vertical line at x = 200 to show where residuals are for 200 iterations plot
+    plt.axvline(x=200, color='r', linestyle='--', label='x = 200 iterations')
+
+    # Plotting vertical lines to show cap of iterations
+    plt.axvline(x=len(x_residuals), color='blue', linestyle='--', label=f"x cap: {len(x_residuals)}", alpha=0.7)
+    plt.axvline(x=len(y_residuals), color='orange', linestyle='--', label=f"y cap: {len(y_residuals)}", alpha=0.7)
+    plt.axvline(x=len(z_residuals), color='green', linestyle='--', label=f"z cap: {len(z_residuals)}", alpha=0.7)
+
+    plt.xlabel('Number of Iterations')
+    plt.ylabel('Error')
+    plt.title('Gradient Descent Residuals')
+    plt.legend()
+    plt.show()
+
+
