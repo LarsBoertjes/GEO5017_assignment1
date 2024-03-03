@@ -2,7 +2,7 @@ import numpy as np
 
 
 def least_squares(input_values, output_values, k):
-    d = np.column_stack([input_values ** i for i in range(k+1)])
+    d = np.column_stack([input_values ** i for i in range(k)])
 
     param = np.linalg.inv(d.T @ d) @ d.T @ output_values
 
