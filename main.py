@@ -37,13 +37,13 @@ t = np.arange(0, len(x))
 learning_rate = 0.001
 iterations = 10000
 
-ax_0, ax_1 = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)
-ay_0, ay_1 = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)
-az_0, az_1 = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)
+ax_0, ax_1 = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)[1]
+ay_0, ay_1 = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)[1]
+az_0, az_1 = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)[1]
 
-error_x_speed = loss_olse(x, predict_pos_speed(ax_0, ax_1, t))
-error_y_speed = loss_olse(y, predict_pos_speed(ay_0, ay_1, t))
-error_z_speed = loss_olse(z, predict_pos_speed(az_0, az_1, t))
+error_x_speed = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)[0]
+error_y_speed = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)[0]
+error_z_speed = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)[0]
 
 # 2.2a assume constant speed linear regression with ordinary least squares
 # if speed is constant then a * t^2 = 0 therefore
@@ -68,18 +68,18 @@ error_z_speed_ls = least_squares(t, z, 2)[0]
 learning_rate = 0.0005
 iterations = 18000
 
-bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)
-by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)
-bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)
+bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[1]
+by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[1]
+bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[1]
 
 # error array x,y,z direction for plotting against iterations later
-errors_x = gradient_solver_including_errors(x, t, learning_rate, iterations, 0.00000001, 3)[1]
-errors_y = gradient_solver_including_errors(y, t, learning_rate, iterations, 0.00000001, 3)[1]
-errors_z = gradient_solver_including_errors(z, t, learning_rate, iterations, 0.00000001, 3)[1]
+errors_x = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[1]
+errors_y = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[1]
+errors_z = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[1]
 
-error_x_acc = loss_olse(x, predict_pos_acc(bx_0, bx_1, bx_2, t))
-error_y_acc = loss_olse(y, predict_pos_acc(by_0, by_1, by_2, t))
-error_z_acc = loss_olse(z, predict_pos_acc(bz_0, bz_1, bz_2, t))
+error_x_acc = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[0]
+error_y_acc = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[0]
+error_z_acc = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[0]
 
 # 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
 # least squares method

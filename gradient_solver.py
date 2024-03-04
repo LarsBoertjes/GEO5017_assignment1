@@ -3,12 +3,17 @@ import numpy as np
 
 def gradient_solver(y, t, learning_rate, max_iter, tolerance, k):
     parameters = [0] * (k)
+    residuals = []
 
     for _ in range(max_iter):
         y_pred = 0
+        residual = y - y_pred
 
         for i in range(k):
             y_pred += parameters[i] * (t ** i)
+
+        residual = y - y_pred
+        residuals.append(np.round(np.sum(residual ** 2), 4))
 
         gradients = [0] * (k)
         for i in range(k):
@@ -20,7 +25,7 @@ def gradient_solver(y, t, learning_rate, max_iter, tolerance, k):
         for i in range(k):
             parameters[i] -= step_size[i]
 
-    return tuple(parameters)
+    return np.array(residuals),  tuple(parameters)
 
 
 def gradient_solver_including_errors(y, t, learning_rate, max_iter, tolerance, k):
