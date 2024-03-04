@@ -5,6 +5,8 @@ The code contains four python files, namely; main.py, leastsquares.py, gradient_
 
 All four are needed to run the main.py, but the program can be run from main.py alone.
 
+Be sure to install the necessary python libraries.
+
 In the main.py you can change the following variables to run the program how it is preferred.
 - line 22: input data
 
@@ -18,3 +20,4 @@ for the constant acceleration gradient descent solver:
 - line 70: set number of iterations
 - line 71: set the tolerance value
 
+The program will plot the plots used for the report and also print all the values used for the report. 
