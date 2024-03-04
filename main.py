@@ -67,19 +67,21 @@ error_z_speed_ls = least_squares(t, z, 2)[0]
 
 learning_rate = 0.0005
 iterations = 18000
+tolerance = 0.00002
 
-bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[1]
-by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[1]
-bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[1]
+bx_0, bx_1, bx_2 = gradient_solver(x, t, learning_rate, iterations, tolerance, 3)[1]
+by_0, by_1, by_2 = gradient_solver(y, t, learning_rate, iterations, tolerance, 3)[1]
+bz_0, bz_1, bz_2 = gradient_solver(z, t, learning_rate, iterations, tolerance, 3)[1]
+
 
 # error array x,y,z direction for plotting against iterations later
-errors_x = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[1]
-errors_y = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[1]
-errors_z = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[1]
+errors_x = gradient_solver(x, t, learning_rate, iterations, tolerance, 3)[0]
+errors_y = gradient_solver(y, t, learning_rate, iterations, tolerance, 3)[0]
+errors_z = gradient_solver(z, t, learning_rate, iterations, tolerance, 3)[0]
 
-error_x_acc = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[0][-1]
-error_y_acc = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[0][-1]
-error_z_acc = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[0][-1]
+error_x_acc = gradient_solver(x, t, learning_rate, iterations, tolerance, 3)[0][-1]
+error_y_acc = gradient_solver(y, t, learning_rate, iterations, tolerance, 3)[0][-1]
+error_z_acc = gradient_solver(z, t, learning_rate, iterations, tolerance, 3)[0][-1]
 
 # 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
 # least squares method
