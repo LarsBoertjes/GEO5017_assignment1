@@ -108,14 +108,14 @@ def plot_positions_with_constant_speed(t, x, y, z, p):
 
     axs[0].scatter(t, x, label='Position of X', color='green', marker='o')
     axs[0].plot(t, predict_pos_speed(p[0], p[1], t), color='red', linewidth=2, label='Gradient Descent')
-    axs[0].plot(t, predict_pos_speed(p[6], p[7], t), color='blue', linewidth=2, label='Linear Regression')
+    axs[0].plot(t, predict_pos_speed(p[6], p[7], t), color='blue', linewidth=2, label='Least Squares')
     axs[0].set_xlabel('time')
     axs[0].set_ylabel('x_position')
     axs[0].legend()
 
     axs[1].scatter(t, y, label='Position of Y', color='green', marker='o')
     axs[1].plot(t, predict_pos_speed(p[2], p[3], t), color='red', linewidth=2, label='Gradient Descent')
-    axs[1].plot(t, predict_pos_speed(p[8], p[9], t), color='blue', linewidth=2, label='Linear Regression')
+    axs[1].plot(t, predict_pos_speed(p[8], p[9], t), color='blue', linewidth=2, label='Least Squares')
     axs[1].set_xlabel('time')
     axs[1].set_ylabel('y_position')
     axs[1].legend()

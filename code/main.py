@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from leastsquares import least_squares
-from gradient_solver import gradient_solver, gradient_solver_including_errors
+from gradient_solver import gradient_solver
 from plotting import (plot_trajectory_predicted, plot_trajectory_original, residuals_vs_iterations,
                       plot_positions_with_constant_speed,  plot_positions_with_constant_acceleration)
 
@@ -19,7 +19,7 @@ def loss_olse(y, y_pred):
 
 
 # 2.0 Reading the given position data
-df = pd.read_csv('data/positions.csv')
+df = pd.read_csv('../data/positions.csv')
 
 x = np.array(df['X'])
 y = np.array(df['Y'])
@@ -36,14 +36,15 @@ t = np.arange(0, len(x))
 
 learning_rate = 0.001
 iterations = 10000
+tolerance = 0.000001
 
-ax_0, ax_1 = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)[1]
-ay_0, ay_1 = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)[1]
-az_0, az_1 = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)[1]
+ax_0, ax_1 = gradient_solver(x, t, learning_rate, iterations, tolerance, 2)[1]
+ay_0, ay_1 = gradient_solver(y, t, learning_rate, iterations, tolerance, 2)[1]
+az_0, az_1 = gradient_solver(z, t, learning_rate, iterations, tolerance, 2)[1]
 
-error_x_speed = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)[0][-1]
-error_y_speed = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)[0][-1]
-error_z_speed = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)[0][-1]
+error_x_speed = gradient_solver(x, t, learning_rate, iterations, tolerance, 2)[0][-1]
+error_y_speed = gradient_solver(y, t, learning_rate, iterations, tolerance, 2)[0][-1]
+error_z_speed = gradient_solver(z, t, learning_rate, iterations, tolerance, 2)[0][-1]
 
 # 2.2a assume constant speed linear regression with ordinary least squares
 # if speed is constant then a * t^2 = 0 therefore
