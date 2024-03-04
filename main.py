@@ -41,9 +41,9 @@ ax_0, ax_1 = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)[1]
 ay_0, ay_1 = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)[1]
 az_0, az_1 = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)[1]
 
-error_x_speed = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)[0]
-error_y_speed = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)[0]
-error_z_speed = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)[0]
+error_x_speed = gradient_solver(x, t, learning_rate, iterations, 0.000001, 2)[0][-1]
+error_y_speed = gradient_solver(y, t, learning_rate, iterations, 0.000001, 2)[0][-1]
+error_z_speed = gradient_solver(z, t, learning_rate, iterations, 0.000001, 2)[0][-1]
 
 # 2.2a assume constant speed linear regression with ordinary least squares
 # if speed is constant then a * t^2 = 0 therefore
@@ -77,9 +77,9 @@ errors_x = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[1]
 errors_y = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[1]
 errors_z = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[1]
 
-error_x_acc = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[0]
-error_y_acc = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[0]
-error_z_acc = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[0]
+error_x_acc = gradient_solver(x, t, learning_rate, iterations, 0.00000001, 3)[0][-1]
+error_y_acc = gradient_solver(y, t, learning_rate, iterations, 0.00000001, 3)[0][-1]
+error_z_acc = gradient_solver(z, t, learning_rate, iterations, 0.00000001, 3)[0][-1]
 
 # 2.2b assume constant acceleration thus polynomial form f(x) = ax_0 + ax_1 * t + ax_2 * t^2
 # least squares method
